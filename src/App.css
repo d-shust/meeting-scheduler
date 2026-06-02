@@ -1,0 +1,82 @@
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 24px;
+  font-family: sans-serif;
+}
+
+.mt-4 { margin-top: 24px; }
+
+.timezone-select-wrapper {
+  margin-bottom: 24px;
+}
+
+.timezone-select-wrapper select {
+  padding: 8px;
+  font-size: 16px;
+  border-radius: 4px;
+}
+
+.slots {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+}
+
+.slot-btn {
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #f9f9f9;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+}
+
+.slot-btn:hover { background: #e0e0e0; }
+
+.slot-btn.selected {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.btn {
+  display: inline-block;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  text-decoration: none;
+  color: #333;
+  background: #e0e0e0;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.primary-btn {
+  background: #28a745;
+  color: white;
+}
+
+.danger-btn {
+  background: #dc3545;
+  color: white;
+}
+
+.meeting-card {
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #f4f7f6;
+}
+
+.meeting-card .datetime {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0 0 10px 0;
+}
