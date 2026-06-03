@@ -1,57 +1,64 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Container, Typography, Box, Button } from '@mui/material'
-import { TimezoneSelect } from '../../components/timezone-select'
-import { getDefaultTimezone } from '../../utils/date'
-import { saveMeeting, getMeeting } from '../../services/meeting-storage'
-import type { Slot } from '../../types/meeting'
+import { Container, Typography, Box, Button, Paper } from '@mui/material'
+import { DateCalendar } from '@mui/x-date-pickers/DateCalendar'
 
-import slotsData from '../../mocks/exp-slots.json'
+import { TimezoneSelect } from '../../components/timezone-select'
 import { ExistingMeetingState } from '../../components/existing-meeting-state'
-import { SlotButton } from './slot-button'
+import { SlotGrid } from './slot-grid'
+import { useScheduler } from '../../hooks/use-scheduler'
 
 export const SchedulerPage = () => {
-    const [timezone, setTimezone] = useState<string>(getDefaultTimezone())
-    const [selectedSlot, setSelectedSlot] = useState<string>('')
-    const navigate = useNavigate()
-    const existingMeeting = getMeeting()
-
-    const slots: Slot[] = slotsData
-
-    const handleConfirm = () => {
-        if (!selectedSlot) return
-        saveMeeting({ datetime: selectedSlot, timezone })
-        navigate('/meeting')
-    }
+    const {
+        timezone,
+        setTimezone,
+        selectedDate,
+        selectedSlot,
+        setSelectedSlot,
+        filteredSlots,
+        existingMeeting,
+        handleShouldDisableDate,
+        handleConfirm,
+        handleDateChange,
+        getLocalSlotDate
+    } = useScheduler()
 
     if (existingMeeting) {
         return <ExistingMeetingState />
     }
 
     return (
-        <Container maxWidth="md" sx={{ py: 4 }}>
-            <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 700 }}>
+        <Container maxWidth="lg" sx={{ py: 4 }}>
+            <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 700, mb: 3 }}>
                 Meeting Scheduler
             </Typography>
             <TimezoneSelect value={timezone} onChange={setTimezone} />
-            <Typography variant="h6" component="h2" sx={{ mb: 2, fontWeight: 600 }}>
-                Available Slots
-            </Typography>
-            <Box sx={{
-                display: 'grid',
-                gap: 2,
-                gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
-                mb: 4
+            <Box sx={{ 
+                display: 'flex', 
+                flexDirection: { xs: 'column', md: 'row' }, 
+                gap: 4, 
+                alignItems: 'flex-start',
+                mb: 4 
             }}>
-                {slots.map((slot) => (
-                    <SlotButton
-                        key={slot.datetime}
-                        slot={slot}
-                        timezone={timezone}
-                        isSelected={selectedSlot === slot.datetime}
-                        onSelect={setSelectedSlot}
+                <Paper variant="outlined" sx={{ borderRadius: 3, p: 1, boxSizing: 'border-box', width: { xs: '100%', md: 'auto' } }}>
+                    <DateCalendar 
+                        value={selectedDate} 
+                        onChange={handleDateChange}
+                        shouldDisableDate={handleShouldDisableDate}
+                        disablePast 
                     />
-                ))}
+                </Paper>
+                <Box sx={{ flex: 1, width: '100%' }}>
+                    <Typography variant="h6" component="h2" sx={{ mb: 2, fontWeight: 600 }}>
+                        Available Slots for {selectedDate ? selectedDate.format('MMMM DD') : ''}
+                    </Typography>
+
+                    <SlotGrid 
+                        slots={filteredSlots}
+                        selectedSlot={selectedSlot}
+                        timezone={timezone}
+                        onSelectSlot={setSelectedSlot}
+                        getLocalSlotDate={getLocalSlotDate}
+                    />
+                </Box>
             </Box>
             <Button
                 variant="contained"
@@ -59,7 +66,7 @@ export const SchedulerPage = () => {
                 size="large"
                 disabled={!selectedSlot}
                 onClick={handleConfirm}
-                sx={{ borderRadius: 2, px: 4, py: 1.5, fontWeight: 600, textTransform: 'none' }}
+                sx={{ borderRadius: 2, px: 6, py: 1.5, fontWeight: 600, textTransform: 'none' }}
             >
                 Confirm
             </Button>
